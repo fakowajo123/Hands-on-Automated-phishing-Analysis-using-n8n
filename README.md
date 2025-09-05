@@ -89,9 +89,9 @@ The phishing analysis workflow follows a layered design:
 The email processing layer is responsible for securely and efficiently retrieving suspicious emails and ensuring each message is only processed once.
 
 - **Outlook Node**: This node connects to the Outlook API to fetch unread messages from the configured mailbox. You can configure it to filter by folder, sender, or other metadata as needed.  
-  - 📸 *Insert screenshot of Outlook node here (showing its configuration)*
+  - ![Outlook Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Email%20node.png)
 - **Mark as Read Node**: After emails are retrieved, this node marks them as read in Outlook so they are not reprocessed in subsequent workflow runs. This is crucial for workflow integrity and to avoid duplicate analysis.  
-  - 📸 *Insert screenshot of Mark as Read node here (showing its configuration)*
+  - ![Mark as Read Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Mark%20as%20read%20node.png)
 
 By separating these two nodes, the workflow maintains a clear audit trail of which emails have been analyzed, and supports scalable processing for large inboxes or high-frequency polling.
 
@@ -102,9 +102,9 @@ By separating these two nodes, the workflow maintains a clear audit trail of whi
 This layer breaks down the email analysis into manageable batches and uses custom logic for extracting indicators.
 
 - **Split In Batches Node**: This node divides the retrieved emails into smaller batches, allowing the workflow to process one email at a time. This is essential for controlling the flow rate and ensuring accurate reporting.  
-  - 📸 *Insert screenshot of Split In Batches node here (showing its configuration)*
+  - ![Split In Batches Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/split%20in%20branches.png)
 - **JavaScript Node**: This node contains custom code to extract URLs and other indicators of compromise from the email body and headers. You can extend the logic to scan for specific phishing patterns such as credential harvesting, fake login pages, or brand impersonation.  
-  - 📸 *Insert screenshot of JavaScript node here (showing its extraction logic)*
+  - ![*JavaScript Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Javascript%20node.png)
 
 #### **Has URL? Node**
 
@@ -117,7 +117,7 @@ The visual workflow includes a clear sequence: Split In Batches → Find indicat
 ![Image 1: Workflow Screenshot](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Workflow%20Layout.png)
 
 The screenshot above demonstrates the use of the Has URL? node (orange diamond), positioned after the indicator extraction logic. The flow continues to threat intelligence checks only if URLs are detected.
-
+![Has URL? Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/URL%20checker.png)
 The batch splitting and Has URL? logic together enable granular, targeted phishing analysis, minimizing false positives and processing overhead.
 
 ---
@@ -128,13 +128,19 @@ The threat intelligence layer leverages both URLscan.io and VirusTotal APIs, and
 
 - **URLscan.io Nodes**:
   - **Scan URL Node**: Submits the extracted URL to URLscan.io for scanning.
+  -  ![Scan URL Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/URL%20scan%20node.png)
+  -  - **No Error? Node**: Checks if the scan completed without errors before proceeding to report generation. If errors are detected, the workflow skips or retries as appropriate.
+  - ![No Error? Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/No%20error%20node.png)
   - **Wait Node**: Introduces a delay to ensure the scan completes before retrieving results.
-  - **No Error? Node**: Checks if the scan completed without errors before proceeding to report generation. If errors are detected, the workflow skips or retries as appropriate.
+  - ![Wait Node]()
   - **Get Report Node**: Fetches the final scan report, including malicious verdicts, screenshots, and metadata.
+  - ![Get Report Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Url%20Get%20Report%20node.png)
 
 - **VirusTotal Nodes**:
   - **Scan URL Node**: Sends the URL to VirusTotal for analysis.
+  - ![Scan URL Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/VirusTotal%20scan%20node.png)
   - **Get Report Node**: Retrieves the comprehensive reputation report, showing the number of engines that flagged the URL as malicious or suspicious.
+  - ![Get Report Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Virustotal%20Get%20report%20node.png)
 
 - **URLhaus Node**:
   - **Scan URL Node**: Submits the URL to URLhaus database to check for known malicious URLs.
@@ -142,19 +148,13 @@ The threat intelligence layer leverages both URLscan.io and VirusTotal APIs, and
 
 These dedicated "Get Report" nodes for each service guarantee that only finalized, complete scan results are used in the subsequent reporting stage. The inclusion of the **No Error?** node ensures that only successful scan results are processed, minimizing the risk of incomplete or faulty data in the threat intelligence workflow. The workflow's layered approach (Scan → Wait → No Error → Get Report) minimizes the risk of incomplete data and supports repeatable, automated threat intelligence enrichment.
 
-📸 *Insert screenshot of URLscan.io scan, wait, no error, and report nodes here*  
-📸 *Insert screenshot of VirusTotal scan and report nodes here*  
-📸 *Insert screenshot of URLhaus scan and report nodes here*
 
 ---
 
 ### Step 5: Report Generation
 
 - **Merge Node**: Combines results from all APIs, including verdicts, screenshots, and reputation scores.
-- **Code Node**: Scores severity and prepares structured report, highlighting the number of detections, severity level (high, medium, low), and recommended actions. The report is formatted for easy review and triage by security analysts.
-
-📸 *Insert screenshot of Merge + Report Builder here*
-
+![Merge Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Merge%20report%20Node.png)
 ---
 
 ### Step 6: Slack Notifications
@@ -162,8 +162,7 @@ These dedicated "Get Report" nodes for each service guarantee that only finalize
 - **Slack Node**: Sends report to a security channel with formatted message blocks, including subject, sender, findings, and severity.
 - Provides real-time visibility for security teams, with actionable intelligence to respond to phishing threats.
 
-📸 *Insert screenshot of Slack node here*
-
+![Slack Node](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Slack%20message%20node.png)
 ---
 
 ## Configuration Details
@@ -181,17 +180,7 @@ Other configuration options:
 
 ## Sample Report
 
-✉️ **Phishing Scan**  
-Subject: Verify your account  
-From: it-support@example.com  
-Received: 2025-09-05
-
-**Findings:**
-• https://example.bad/phish — Severity: High | VT(mal:7/sus:2) | URLscan: malicious | URLhaus: listed
-
-Recommended action: Quarantine email, notify user, block domain.
-
-📸 *Insert screenshot of Slack message output here*
+![Sample Report](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Sample%20report.png)
 
 ---
 
