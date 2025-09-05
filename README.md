@@ -72,7 +72,7 @@ The phishing analysis workflow follows a layered design:
 - Configure Schedule Trigger to run every X seconds/minutes.
 - Ensures continuous monitoring without manual checks.
 
-📸 *Insert screenshot of Schedule Trigger node here*
+![Trigger & Scheduling](https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Trigger%20%26%20Scheduling.png)
 
 ---
 
