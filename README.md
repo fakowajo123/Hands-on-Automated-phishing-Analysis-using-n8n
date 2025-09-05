@@ -1,13 +1,13 @@
 # Hands-on-Automated-phishing-Analysis-using-n8n
-Developed an automated phishing analysis system that parses emails, extracts embedded links, and validates them against URLscan.io, URLhaus, and VirusTotal. The tool generates a detailed threat report[...]
+Developed an automated phishing analysis system that parses emails, extracts embedded links, and validates them against URLscan.io, URLhaus, and VirusTotal. The tool generates a detailed threat report with severity scoring and delivers notifications to Slack, enabling rapid incident response and streamlined SOC operations.
 
 ---
 
 ## Introduction
 
-Email remains one of the most common attack vectors for phishing campaigns. Security teams often face challenges in rapidly analyzing suspicious emails due to manual link inspection and delayed notifi[...]
+Email remains one of the most common attack vectors for phishing campaigns. Security teams often face challenges in rapidly analyzing suspicious emails due to manual link inspection and delayed notifications. Automated workflows can dramatically reduce the time to detection and response.
 
-The system ingests incoming Outlook emails, parses messages for indicators of compromise, and checks embedded URLs against URLscan.io and VirusTotal using their APIs. Results are merged into a consoli[...]
+The system ingests incoming Outlook emails, parses messages for indicators of compromise, and checks embedded URLs against URLscan.io and VirusTotal using their APIs. Results are merged into a consolidated report and delivered to Slack for immediate action.
 
 This project highlights my skills in:
 
@@ -82,7 +82,7 @@ The email processing layer is responsible for securely and efficiently retrievin
 
 - **Outlook Node**: This node connects to the Outlook API to fetch unread messages from the configured mailbox. You can configure it to filter by folder, sender, or other metadata as needed. 
   - 📸 *Insert screenshot of Outlook node here (showing its configuration)*
-- **Mark as Read Node**: After emails are retrieved, this node marks them as read in Outlook so they are not reprocessed in subsequent workflow runs. This is crucial for workflow integrity and to avoid redundant analysis.
+- **Mark as Read Node**: After emails are retrieved, this node marks them as read in Outlook so they are not reprocessed in subsequent workflow runs. This is crucial for workflow integrity and to avoid duplicate analysis.
   - 📸 *Insert screenshot of Mark as Read node here (showing its configuration)*
 
 By separating these two nodes, the workflow maintains a clear audit trail of which emails have been analyzed, and supports scalable processing for large inboxes or high-frequency polling.
@@ -93,9 +93,9 @@ By separating these two nodes, the workflow maintains a clear audit trail of whi
 
 This layer breaks down the email analysis into manageable batches and uses custom logic for extracting indicators.
 
-- **Split In Batches Node**: This node divides the retrieved emails into smaller batches, allowing the workflow to process one email at a time. This is essential for controlling the flow rate and ensuring that API rate limits are respected.
+- **Split In Batches Node**: This node divides the retrieved emails into smaller batches, allowing the workflow to process one email at a time. This is essential for controlling the flow rate and ensuring APIs are not overloaded.
   - 📸 *Insert screenshot of Split In Batches node here (showing its configuration)*
-- **JavaScript Node**: This node contains custom code to extract URLs and other indicators of compromise from the email body and headers. You can extend the logic to scan for specific phishing patterns, suspicious domains, and more.
+- **JavaScript Node**: This node contains custom code to extract URLs and other indicators of compromise from the email body and headers. You can extend the logic to scan for specific phishing patterns like suspicious domains, credential harvesting links, or fake login forms.
   - 📸 *Insert screenshot of JavaScript node here (showing its extraction logic)*
 
 The combination of splitting in batches and using targeted extraction logic ensures that each email is thoroughly analyzed, while maintaining efficiency and scalability.
@@ -104,8 +104,8 @@ The combination of splitting in batches and using targeted extraction logic ensu
 
 ### Step 4: Threat Intelligence Checks
 
-- URLscan.io Node: Submits URL and retrieves scan results.
-- VirusTotal Node: Submits URL and checks reputation.
+- **URLscan.io Node**: Submits URL and retrieves scan results, including malicious verdicts and screenshots if available.
+- **VirusTotal Node**: Submits URL and checks reputation, displaying number of engines that flagged the URL as malicious or suspicious.
 
 📸 *Insert screenshot of URLscan.io node here*
 📸 *Insert screenshot of VirusTotal node here*
@@ -114,8 +114,8 @@ The combination of splitting in batches and using targeted extraction logic ensu
 
 ### Step 5: Report Generation
 
-- Merge Node: Combines results from both APIs.
-- Code Node: Scores severity and prepares structured report.
+- **Merge Node**: Combines results from both APIs, including verdicts, screenshots, and reputation scores.
+- **Code Node**: Scores severity and prepares structured report, highlighting the number of detections, severity level (high, medium, low), and recommended actions.
 
 📸 *Insert screenshot of Merge + Report Builder here*
 
@@ -123,8 +123,8 @@ The combination of splitting in batches and using targeted extraction logic ensu
 
 ### Step 6: Slack Notifications
 
-- Slack Node: Sends report to a security channel.
-- Provides real-time visibility for security teams.
+- **Slack Node**: Sends report to a security channel with formatted message blocks, including subject, sender, findings, and severity.
+- Provides real-time visibility for security teams, with actionable intelligence to respond to phishing threats.
 
 📸 *Insert screenshot of Slack node here*
 
@@ -132,9 +132,9 @@ The combination of splitting in batches and using targeted extraction logic ensu
 
 ## Configuration Details
 
-- Environment variables for API keys
-- Rate limits for URLscan.io and VirusTotal
-- Slack bot token setup and required scopes (`chat:write`)
+- Environment variables for API keys are set in the n8n environment for secure storage.
+- Rate limits for URLscan.io and VirusTotal should be respected; set workflow delays if needed.
+- Slack bot token setup and required scopes (`chat:write`) must be configured in your Slack app settings.
 
 ---
 
@@ -154,17 +154,21 @@ Received: 2025-09-05
 
 ## Error Handling & Limitations
 
-- API rate limits (URLscan.io & VirusTotal)
-- Requires network connectivity to external APIs
-- Only scans links, not attachments (future improvement)
+- API rate limits (URLscan.io & VirusTotal) may delay processing; implement retry logic if necessary.
+- Requires network connectivity to external APIs; failures should trigger notification alerts.
+- Only scans links, not attachments (future improvement planned for attachment sandboxing).
+- If no URLs are found, the report will note "No indicators detected."
+- The system relies on the accuracy of threat intelligence feeds, which may occasionally have false positives.
 
 ---
 
 ## Future Enhancements
 
-- Add attachment scanning (sandbox integration)
-- Forward results into SIEM for long-term storage
-- Expand detection to include suspicious keywords and domains
-- Add caching to avoid resubmitting known safe URLs; build this into it
+- Add attachment scanning (sandbox integration) to detect malware or credential harvesters in files.
+- Forward results into SIEM for long-term storage and advanced correlation.
+- Expand detection to include suspicious keywords and domains, such as impersonation attempts or brand abuse.
+- Add caching to avoid resubmitting known safe URLs; build this into the workflow for efficiency.
+- Integrate additional threat feeds (e.g., URLhaus, PhishTank) for broader coverage.
+- Enable automated email quarantine or user notification for confirmed threats.
 
 ---
