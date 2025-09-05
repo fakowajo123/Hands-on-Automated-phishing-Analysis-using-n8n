@@ -61,7 +61,7 @@ The phishing analysis workflow follows a layered design:
 5. **Report Generation**: Results are normalized, merged, and scored for severity.
 6. **Slack Notifications**: A formatted phishing analysis report is posted to a dedicated Slack channel.
 
-📸 *Insert workflow diagram screenshot here*
+(https://github.com/fakowajo123/Hands-on-Automated-phishing-Analysis-using-n8n/blob/main/Screenshots/Workflow%20Layout.png)
 
 ---
 
