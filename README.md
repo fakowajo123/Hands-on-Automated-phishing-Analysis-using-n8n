@@ -5,9 +5,9 @@ Developed an automated phishing analysis system that parses emails, extracts emb
 
 ## Introduction
 
-Email remains one of the most common attack vectors for phishing campaigns. Security teams often face challenges in rapidly analyzing suspicious emails due to manual link inspection and delayed notifications. To address this, I designed and deployed an automated phishing analysis workflow using n8n.
+Email remains one of the most common attack vectors for phishing campaigns. Security teams often face challenges in rapidly analyzing suspicious emails due to manual link inspection and delayed notifi[...]
 
-The system ingests incoming Outlook emails, parses messages for indicators of compromise, and checks embedded URLs against URLscan.io and VirusTotal using their APIs. Results are merged into a consolidated phishing report, which is automatically delivered to a designated Slack channel for real-time security visibility.
+The system ingests incoming Outlook emails, parses messages for indicators of compromise, and checks embedded URLs against URLscan.io and VirusTotal using their APIs. Results are merged into a consoli[...]
 
 This project highlights my skills in:
 
@@ -78,19 +78,27 @@ The phishing analysis workflow follows a layered design:
 
 ### Step 2: Email Processing
 
-- Outlook Node: Retrieves unread messages.
-- Mark as Read Node: Prevents reprocessing of the same email.
+The email processing layer is responsible for securely and efficiently retrieving suspicious emails and ensuring each message is only processed once.
 
-📸 *Insert screenshot of Outlook nodes here*
+- **Outlook Node**: This node connects to the Outlook API to fetch unread messages from the configured mailbox. You can configure it to filter by folder, sender, or other metadata as needed. 
+  - 📸 *Insert screenshot of Outlook node here (showing its configuration)*
+- **Mark as Read Node**: After emails are retrieved, this node marks them as read in Outlook so they are not reprocessed in subsequent workflow runs. This is crucial for workflow integrity and to avoid redundant analysis.
+  - 📸 *Insert screenshot of Mark as Read node here (showing its configuration)*
+
+By separating these two nodes, the workflow maintains a clear audit trail of which emails have been analyzed, and supports scalable processing for large inboxes or high-frequency polling.
 
 ---
 
 ### Step 3: IOC Detection & URL Extraction
 
-- Split In Batches: Processes one email at a time.
-- JavaScript Node: Extracts URLs from email body/headers.
+This layer breaks down the email analysis into manageable batches and uses custom logic for extracting indicators.
 
-📸 *Insert screenshot of IOC Detection logic here*
+- **Split In Batches Node**: This node divides the retrieved emails into smaller batches, allowing the workflow to process one email at a time. This is essential for controlling the flow rate and ensuring that API rate limits are respected.
+  - 📸 *Insert screenshot of Split In Batches node here (showing its configuration)*
+- **JavaScript Node**: This node contains custom code to extract URLs and other indicators of compromise from the email body and headers. You can extend the logic to scan for specific phishing patterns, suspicious domains, and more.
+  - 📸 *Insert screenshot of JavaScript node here (showing its extraction logic)*
+
+The combination of splitting in batches and using targeted extraction logic ensures that each email is thoroughly analyzed, while maintaining efficiency and scalability.
 
 ---
 
