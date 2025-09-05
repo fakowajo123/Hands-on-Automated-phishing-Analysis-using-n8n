@@ -1,0 +1,9 @@
+const items = $input.all();
+const updatedItems = items.map((item) => {
+  const content = item?.json?.body?.content;
+  const urlMatch = content.match(/(http|https):\/\/[^\s"]+/g);
+  const url =
+    urlMatch && urlMatch[0] !== item?.json?.webLink ? urlMatch[0] : null;
+  return { ...item.json, url };
+});
+return updatedItems;
